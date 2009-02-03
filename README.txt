@@ -39,12 +39,18 @@ Resource links for the above dependencies can be found here:
 Gnip has a test publisher "gnipherald":
 https://demo-v21.gnip.com/gnip/publishers/gnipherald/notification/
 
-The following example get the twitter publisher:
+The following example get the gnipherald publisher:
 
     Config config = new Config("<username>", "<password>");
     GnipConnection gnip = new GnipConnection(config);
     Publisher publisher = gnip.GetPublisher(PublisherType.Gnip, "gnipherald");
     Console.WriteLine("Got Publisher: " + publisher.Name);
+    
+Note the first parameter to the gnip.GetPublisher call is a PublisherType. PublisherTypes
+indicate the namespace where the publisher is stored. Currently there are 2 namespaces,
+"my" and "gnip". The "my" namespace is where the producers associated with your login are
+accessed. It is also where you retreive your producers activities. The "gnip" is 
+where public facing producers are accessed as well as their activities and notifications.
 
 The following example retrieves notification data from the current bucket for 
 gnipherald. Please note that the current bucket is not static and 
@@ -53,11 +59,11 @@ to know if you can connect and access the public notification data.
 
     Config config = new Config("<username>", "<password>");
     GnipConnection gnip = new GnipConnection(config);
-    Publisher publisher = gnip.GetPublisher(PublisherType.My, "gnipherald");
+    Publisher publisher = gnip.GetPublisher(PublisherType.Gnip, "gnipherald");
     Activities activities = gnip.GetNotifications(publisher);
     foreach(Activity activity in activities.Items)
     {
-        Console.WriteLine("Twitter Activity Actors for activity at " + activity.At + ": ");
+        Console.WriteLine("Gnip Herald Activity Actors for activity at " + activity.At + ": ");
         foreach(Actor actor in activity.Actors)
         {
             Console.WriteLine("Actor: " + actor.Value);
@@ -140,7 +146,7 @@ get the publisher and request the stream. These examples uses the publisher
     Activities activities = gnip.GetNotifications(publisher);
     foreach(Activity activity in activities.Items)
     {
-        Console.WriteLine("Twitter Activity Actors for activity at " + activity.At + ": ");
+        Console.WriteLine("Gnip Herald Activity Actors for activity at " + activity.At + ": ");
         foreach(Actor actor in activity.Actors)
         {
             Console.WriteLine("Actor: " + actor.Value);
@@ -160,7 +166,7 @@ You can also view the current notifications bucket via web on the Gnip site:
     Activities activities = gnip.GetNotifications(publisher, DateTime.Now);
     foreach(Activity activity in activities.Items)
     {
-        Console.WriteLine("Twitter Activity Actors for activity at " + activity.At + ": ");
+        Console.WriteLine("Gnip Herald Activity Actors for activity at " + activity.At + ": ");
         foreach(Actor actor in activity.Actors)
         {
             Console.WriteLine("Actor: " + actor.Value);
