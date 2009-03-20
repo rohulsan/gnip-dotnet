@@ -14,7 +14,7 @@ Dependency URLs copied into the Gnip.Lib folder.
 = Required Dependencies =
 
   - .NET 2.0
-  - A user account on Gnip https://demo-v21.gnip.com/
+  - A user account on Gnip https://api-v21.gnip.com/
   - log4net - The files log4net.dll and log4net.xml live in
     the Gnip.Lib/log4net-<version> folder. If you are using a 
     different version of log4net, you may want to create a 
@@ -37,7 +37,7 @@ Resource links for the above dependencies can be found here:
 == Quick Start ==
 
 Gnip has a test publisher "gnip-sample":
-https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/
+https://api-v21.gnip.com/gnip/publishers/gnip-sample/notification/
 
 The following example get the gnip-sample publisher:
 
@@ -105,7 +105,7 @@ see http://loggin.apache.org/log4net for more.
 NUnit tests are set up for these libraries. There are unit tests and 
 integration tests. They live in Gnip.ClientTest. The parameters for the
 tests are configured in Gnip.ClientTest/App.config. You will want to create
-a producer at https://demo-v21.gnip.com/. Under 'your publishers' select
+a producer at https://api-v21.gnip.com/. Under 'your publishers' select
 'create a new one'. Then use the pubisher name in the app.config file.
 an file names Gnip.ClientTest/gnip.nuit exists for the nunit client application.
 
@@ -154,7 +154,7 @@ get the publisher and request the stream. These examples uses the publisher
     }
 
 You can also view the current notifications bucket via web on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/current.xml
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/notification/current.xml
 	
 	
 *** Notification data stream request with optional date param ***
@@ -174,7 +174,7 @@ You can also view the current notifications bucket via web on the Gnip site:
     }
 
 You can see the running list of notification buckets on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/notification/
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/notification/
 	
 When activities are published to date buckets, they are published according to
 the Gnip server GMT time. Thus, when passing a client generated dateTime as a parameter to
@@ -242,10 +242,10 @@ You can view your filters by running:
 Your actors list should be (not necessarily in this order): joeblow, jvaleski
 
 You can also see your filters list for each publisher by going to the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/filters
 	
 You can view notification buckets on the Gnip site by going to:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters/myNotificationFilter/notification
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/filters/myNotificationFilter/notification
 	
 *** Activity Filter with POST URL ***
 
@@ -274,11 +274,11 @@ You can view your filters by running:
       Filter filter = gnip.GetFilter(publisher, "myActivityFilter");
 
 You can see your filters by going to the Gnip site:
-	https://demo-v21.gnip.com/gnip/publishers/gnip-sample/filters
+	https://api-v21.gnip.com/gnip/publishers/gnip-sample/filters
 Your actors list should be (not necessarily in this order): joeblow, jvaleski
 
 Once data is available, you can see it here:
-	https://demo-v21.gnip.com/gnip/publishers/gnip-sample/activity
+	https://api-v21.gnip.com/gnip/publishers/gnip-sample/activity
 	
 === Example 3: Add rules to an existing filter ===
 
@@ -318,7 +318,7 @@ activities for a publisher that you do not own.
     Activities activities = gnip.GetActivities(publisher);
 
 You can also view the current activity bucket via web on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/activity/current.xml
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/activity/current.xml
 
 *** Activity Data Stream Request with Date Param ***
 
@@ -330,7 +330,7 @@ activities for a publisher that you do not own.
     Activities activities = gnip.GetActivities(publisher, DateTime.Now);
 
 You can see the running list of activity buckets on the Gnip site:
-    https://demo-v21.gnip.com/gnip/publishers/gnip-sample/activity/
+    https://api-v21.gnip.com/gnip/publishers/gnip-sample/activity/
 
 === Example 6: Add rules in large batches ===
 
