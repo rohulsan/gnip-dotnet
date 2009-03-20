@@ -84,5 +84,36 @@ namespace Gnip.Client
             }
             Assert.IsTrue(areEqual);
         }
+
+        [Test]
+        public void TestCreateDeletePublishers()
+        {
+            Publisher publisher = null;
+            Result result = null;
+
+            publisher = new Publisher(PublisherType.My, "hydrogentestpublisher", RuleType.Actor);
+            result = gnipConnection.Create(publisher);
+
+            Assert.IsTrue(result.IsSuccess);
+
+            // get the newly created publisher
+            publisher = gnipConnection.GetPublisher(PublisherType.My, "hydrogentestpublisher");
+            Assert.IsNotNull(publisher);
+            Assert.AreEqual("hydrogentestpublisher", publisher.Name);
+
+            // delete it
+            result = gnipConnection.Delete(publisher);
+            Assert.IsTrue(result.IsSuccess);
+
+            try
+            {
+                // get the newly created publisher
+                publisher = gnipConnection.GetPublisher(PublisherType.My, "hydrogentestpublisher");
+                Assert.Fail("Expecting exception");
+            }
+            catch (GnipException)
+            {
+            }
+        }
     }
 }

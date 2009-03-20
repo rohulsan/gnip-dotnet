@@ -46,7 +46,7 @@ namespace Gnip.Client
     /// </li>
     /// </ul>
     /// </summary>
-    public class GnipConnection
+    public class GnipConnection : IGnipConnection
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(GnipConnection));
 
@@ -114,7 +114,7 @@ namespace Gnip.Client
             {
                 throw new GnipException("Exception occurred synching time", e);
             }
-            catch(FormatException e)
+            catch (FormatException e)
             {
                 throw new GnipException("Exception occurred synching time", e);
             }
@@ -155,8 +155,8 @@ namespace Gnip.Client
         /// </summary>
         /// <param name="publisher">The Publisher to post to the Gnip server.</param>
         /// <returns>The Result</returns>
-        /// <throws>GnipException if the Publisher already exists, if there were problems authenticating with a Gnip 
-        /// server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the Publisher already exists, if there were problems authenticating with a Gnip 
+        /// server, or if another error occurred.</exception>
         public Result Create(Publisher publisher)
         {
             try
@@ -171,12 +171,59 @@ namespace Gnip.Client
         }
 
         /// <summary>
+        /// Delete an existing Publisher.
+        /// </summary>
+        /// <param name="publisher">publisher to delete.</param>
+        /// <returns>result message object from Gnip server.</returns>
+        /// <exception cref="GnipException">if the Publisher does not exist, if there were problems authenticating with a Gnip
+        /// server, or if another error occurred.  </exception>
+        public Result Delete(Publisher publisher)
+        {
+            return Delete(publisher.Type, publisher.Name);
+        }
+
+        /// <summary>
+        /// Delete an existing Publisher by publisher scope and publisher name.
+        /// </summary>
+        /// <param name="publisherType">the publisher scope of publisher to delete.</param>
+        /// <param name="publisherName">name of the publisher to delete.</param>
+        /// <returns>result message object from Gnip server.</returns>
+        /// <exception cref="GnipException">if the Publisher does not exist, if there were problems authenticating with a Gnip
+        /// server, or if another error occurred.  </exception>
+        public Result Delete(PublisherType publisherType, String publisherName)
+        {
+            try
+            {
+                Result result = null;
+
+                if (config.TunnelOverPost)
+                {
+                    result = connection.DoPost(TunnelDeleteOverPost(GetPublisherUrl(publisherType, publisherName)), new byte[0]);
+                }
+                else
+                {
+                    result = connection.DoDelete(GetPublisherUrl(publisherType, publisherName));
+                }
+
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new GnipException("Exception occurred deleting Publisher", e);
+            }
+            catch (WebException e)
+            {
+                throw new GnipException("Exception occurred deleting Publisher", e);
+            }
+        }
+
+        /// <summary>
         /// Create a Filter on a Publisher on the Gnip server.
         /// </summary>
         /// <param name="publisher">the publisher that owns the filter</param>
         /// <param name="filter">the filter to create</param>
-        /// <throws>GnipException if the Filter already exists, if there were problems authenticating with a Gnip
-        /// server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the Filter already exists, if there were problems authenticating with a Gnip
+        /// server, or if another error occurred.</exception>
         public Result Create(Publisher publisher, Filter filter)
         {
             try
@@ -196,8 +243,8 @@ namespace Gnip.Client
         /// <param name="type">The PublisherType</param>
         /// <param name="publisherName">name of the publisher to get</param>
         /// <returns> the Publisher if it exists</returns>
-        /// <throws>GnipException if the publisher doesn't exist, if there were problems authentiating with the Gnip server,
-        /// or if another error occurred.</throws>                    
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were problems authentiating with the Gnip server,
+        /// or if another error occurred.</exception>                    
         public Publisher GetPublisher(PublisherType type, string publisherName)
         {
             try
@@ -224,8 +271,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher that owns the filter</param>
         /// <param name="filter">the filter to retrieve</param>
         /// <returns>the Filter if it exists</returns>
-        /// <throws>GnipException if the Filter doesn't exist, if there were problems authenticating with the Gnip server,
-        /// or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the Filter doesn't exist, if there were problems authenticating with the Gnip server,
+        /// or if another error occurred.</exception>
         public Filter GetFilter(Publisher publisher, Filter filter)
         {
             if (publisher == null)
@@ -248,8 +295,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher that owns the filter</param>
         /// <param name="filterName">the name of the filter to retrieve</param>
         /// <returns>the Filter if it exists</returns>
-        /// <throws>GnipException if the Filter doesn't exist, if there were problems authenticating with the Gnip server,
-        /// or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the Filter doesn't exist, if there were problems authenticating with the Gnip server,
+        /// or if another error occurred.</exception>
         public Filter GetFilter(Publisher publisher, string filterName)
         {
             if (publisher == null)
@@ -273,8 +320,8 @@ namespace Gnip.Client
         /// <param name="publisherName">the name of the publisher</param>
         /// <param name="filterName">the filter to retrieve</param>
         /// <returns>the Filter} if it exists</returns>
-        /// <throws>GnipException if the Filter doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">GnipException if the Filter doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Filter GetFilter(PublisherType type, string publisherName, string filterName)
         {
             try
@@ -294,8 +341,8 @@ namespace Gnip.Client
         /// </summary>
         /// <param name="publisher">The Publisher to update.</param>
         /// <returns>The Result</returns>
-        /// <throws>GnipException if the Publisher does not already exists, if there were problems authenticating with a Gnip 
-        /// server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">GnipException if the Publisher does not already exists, if there were problems authenticating with a Gnip 
+        /// server, or if another error occurred.</exception>
         public Result Update(Publisher publisher)
         {
             try
@@ -334,8 +381,8 @@ namespace Gnip.Client
         /// 
         /// <param name="publisher">the publisher that owns the filter</param>
         /// <param name="filter">the filter to update</param>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Update(Publisher publisher, Filter filter)
         {
             try
@@ -365,8 +412,8 @@ namespace Gnip.Client
         /// <param name="filter">the filter to update</param>
         /// <param name="rule">the rule to add to the filter</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Update(Publisher publisher, Filter filter, Rule rule)
         {
             return this.Update(publisher, filter.Name, rule);
@@ -377,8 +424,8 @@ namespace Gnip.Client
         /// <param name="filterName">the filter to update</param>
         /// <param name="rule">the rule to add to the filter</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">GnipException if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Update(Publisher publisher, string filterName, Rule rule)
         {
             try
@@ -399,8 +446,8 @@ namespace Gnip.Client
         /// <param name="filter">the filter to update]</param>
         /// <param name="rules">the set of rules to add to the filter</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Update(Publisher publisher, Filter filter, Rules rules)
         {
             return this.Update(publisher, filter.Name, rules);
@@ -413,8 +460,8 @@ namespace Gnip.Client
         /// <param name="filterName">the filter to update]</param>
         /// <param name="rules">the set of rules to add to the filter]</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Update(Publisher publisher, string filterName, Rules rules)
         {
             try
@@ -432,8 +479,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher from which to delete the filter]</param>
         /// <param name="filter">the filter to delete]</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">iif the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Delete(Publisher publisher, Filter filter)
         {
             return this.Delete(publisher, filter.Name);
@@ -443,8 +490,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher from which to delete the filter</param>
         /// <param name="filterName">the name of the filter to delete</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Delete(Publisher publisher, string filterName)
         {
             try
@@ -473,8 +520,8 @@ namespace Gnip.Client
         /// <param name="filter">the filter from which to remove a rule]</param>
         /// <param name="rule">the rule to remove</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Delete(Publisher publisher, Filter filter, Rule rule)
         {
             return this.Delete(publisher, filter.Name, rule);
@@ -485,8 +532,8 @@ namespace Gnip.Client
         /// <param name="filterName">the name of the filter from which to remove a rule</param>
         /// <param name="rule">the rule to remove</param>
         /// <returns>The Result of the Update</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Delete(Publisher publisher, string filterName, Rule rule)
         {
             try
@@ -519,8 +566,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher to publish activities to</param>
         /// <param name="activities">the activities to publish</param>
         /// <returns>Result, null of there were no activities to publish, otherwise the results of the publish.</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Result Publish(Publisher publisher, Activities activities)
         {
             if (activities == null || activities.Items.Count == 0)
@@ -553,8 +600,8 @@ namespace Gnip.Client
         /// </summary>
         /// <param name="publisher">the publisher whose activities to get</param>
         /// <returns> the Activities model, which contains a set of Activity activities.</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Activities GetActivities(Publisher publisher)
         {
             try
@@ -594,8 +641,8 @@ namespace Gnip.Client
         /// <param name="dateTime">timestamp - DateTime.MinValue insures that activities are
         /// read from the latest bucket. Refer to the TimeCorrection property for more 
         /// information about the dateTime parameter.</param>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Activities GetActivities(Publisher publisher, DateTime dateTime)
         {
             try
@@ -619,8 +666,8 @@ namespace Gnip.Client
         /// <returns> the notifications or activities in the current bucket or an empty Activities object if no
         /// notifications or activities were found in the current bucket.
         /// </returns>
-        /// <throws>GnipException if the publisher or filter don't exist, if there were problems 
-        /// authenticating with the Gnip server, or if another error occurred.</throws>           
+        /// <exception cref="GnipException">if the publisher or filter don't exist, if there were problems 
+        /// authenticating with the Gnip server, or if another error occurred.</exception>           
         public Activities GetActivities(Publisher publisher, Filter filter)
         {
             try
@@ -648,8 +695,8 @@ namespace Gnip.Client
         /// <returns> the notifications or activities in the current bucket or an empty Activities object if no
         /// notifications or activities were found in the current bucket.
         /// </returns>
-        /// <throws>GnipException if the publisher or filter don't exist, if there were problems 
-        /// authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher or filter don't exist, if there were problems 
+        /// authenticating with the Gnip server, or if another error occurred.</exception>
         public Activities GetActivities(Publisher publisher, Filter filter, DateTime dateTime)
         {
             try
@@ -675,8 +722,8 @@ namespace Gnip.Client
         /// <param name="publisher">the publisher whose notifications to get</param>
         /// <returns>the Activities model, which contains a set of Activity objects, or an empty
         /// Activities object if no notifications were found in the current notification bucket.</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Activities GetNotifications(Publisher publisher)
         {
             try
@@ -705,8 +752,8 @@ namespace Gnip.Client
         /// information about the dateTime parameter.</param>
         /// <returns> the Activities model, which contains a set of Activity objects, or an empty
         /// Activities object if no notifications were found in the current notification bucket.</returns>
-        /// <throws> GnipException if the publisher doesn't exist, if there were 
-        /// problems authenticating with the Gnip server, or if another error occurred.</throws>
+        /// <exception cref="GnipException">if the publisher doesn't exist, if there were 
+        /// problems authenticating with the Gnip server, or if another error occurred.</exception>
         public Activities GetNotifications(Publisher publisher, DateTime dateTime)
         {
             try
@@ -719,7 +766,7 @@ namespace Gnip.Client
                 throw new GnipException("Exception occurred getting activities", e);
             }
         }
-        
+
         /// <summary> 
         /// Convert a Gnip model object such as a Publisher or a Filter to XML and then
         /// into a byte array.  If the Config is configured to use compression, the byte array will
@@ -727,7 +774,7 @@ namespace Gnip.Client
         /// </summary>
         /// <param name="resource">the resource to convert</param>
         /// <returns>a byte array that represents the serialized XML document and may be gzipp'ed</returns>
-        /// <throws>IOException when an exception occurs writing data to bytes </throws>
+        /// <exception cref="IOException">when an exception occurs writing data to bytes </exception>
         private byte[] ConvertToBytes<T>(T resource)
         {
             Log.Debug("Starting data marshalling at " + DateTime.Now);
@@ -766,7 +813,7 @@ namespace Gnip.Client
         private string GetPublishersUrl(PublisherType type)
         {
             string space = string.Empty;
-            switch(type)
+            switch (type)
             {
                 case PublisherType.Gnip:
                     space = "gnip";
