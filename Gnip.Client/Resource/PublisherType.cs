@@ -11,6 +11,6 @@ namespace Gnip.Client.Resource
         // Gnip approved publisher
         Gnip,
         // Public publisher. not yet implemented
-        //Public
+        Public
     }
 }

@@ -812,17 +812,7 @@ namespace Gnip.Client
         /// <returns>the publishers Url</returns>
         private string GetPublishersUrl(PublisherType type)
         {
-            string space = string.Empty;
-            switch (type)
-            {
-                case PublisherType.Gnip:
-                    space = "gnip";
-                    break;
-                case PublisherType.My:
-                    space = "my";
-                    break;
-            }
-
+            string space = type.ToString().ToLower();
             return config.GnipServer + space + "/publishers";
         }
 

@@ -94,6 +94,38 @@ namespace Gnip.Client.Resource
             : this(name, postUrl, isFullData, (IEnumerable<Rule>)rules) { }
 
         /// <summary> 
+        /// Create a Filter with the given name, post url, and full data flag.  If the Filter supports full-data
+        /// activities, the {@link #fullData} should be set to true.  If set to false,
+        /// the Filter will just support notifications.
+        /// </summary>
+        /// <param name="name">the filter name</param>
+        /// <param name="isFullData">does the filter support the full data</param>
+        public Filter(string name, bool isFullData)
+            : this(name, null, isFullData) { }
+
+        /// <summary>
+        /// Create a Filter with the given name, post url, and full data flag.  If the Filter supports full-data
+        /// activities, the {@link #fullData} should be set to true.  If set to false,
+        /// the Filter will just support notifications.
+        /// </summary>
+        /// <param name="name">the filter name</param>
+        /// <param name="isFullData">does the filter support the full data</param>
+        /// <param name="rules">The rules to add to this filter</param>
+        public Filter(string name, bool isFullData, IEnumerable<Rule> rules)
+            : this(name, null, isFullData, rules) { }
+
+        /// <summary>
+        /// Create a Filter with the given name, post url, and full data flag.  If the Filter supports full-data
+        /// activities, the {@link #fullData} should be set to true.  If set to false,
+        /// the Filter will just support notifications.
+        /// </summary>
+        /// <param name="name">the filter name</param>
+        /// <param name="isFullData">does the filter support the full data</param>
+        /// <param name="rules">The rules to add to this filter.</param>
+        public Filter(string name, bool isFullData, params Rule[] rules)
+            : this(name, null, isFullData, (IEnumerable<Rule>)rules) { }
+
+        /// <summary> 
         /// Gets/Sets the filter's post URL. If set, the post URL is used by a Gnip server to send either
         /// full data activites or just activity notifications to the subscriber via an HTTP POST.
         /// </summary>
